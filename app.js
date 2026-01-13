@@ -9,11 +9,22 @@ const todoList = document.getElementById('todoList');
 const taskCount = document.getElementById('taskCount');
 const clearCompletedBtn = document.getElementById('clearCompleted');
 const filterBtns = document.querySelectorAll('.filter-btn');
+// New DOM Element for greeting message
+const geminiGreeting = document.getElementById('geminiGreeting');
 
 // Load todos from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadTodos();
     renderTodos();
+
+    // Display greeting message from Gemini CLI to confirm working
+    if (geminiGreeting) {
+        geminiGreeting.textContent = "Hello! Gemini CLI is working.";
+        geminiGreeting.classList.remove('fade-out'); // Make it visible
+        setTimeout(() => {
+            geminiGreeting.classList.add('fade-out'); // Hide it after 5 seconds
+        }, 5000); // Display for 5 seconds
+    }
 });
 
 // Add todo on button click
