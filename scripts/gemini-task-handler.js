@@ -7,20 +7,21 @@
  * It uses the Gemini API to analyze the request and generate code changes.
  */
 
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { VertexAI } = require('@google-cloud/vertexai');
 const { Octokit } = require('@octokit/rest');
 const fs = require('fs').promises;
 const path = require('path');
 
 // Configuration
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.GEMINI_API_KEY; // Fallback for compatibility
+const LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER;
 const COMMENT_BODY = process.env.COMMENT_BODY;
 
 // Initialize clients
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
@@ -72,7 +73,7 @@ async function getProjectContext() {
  * Analyze the request using Gemini
  */
 async function analyzeRequest(issueDetails, userRequest, projectContext) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = vertexAI.getGenerativeModel({ model: 'gemini-2.0-flash-001' });
 
   const prompt = `You are an AI assistant helping with a GitHub issue in a Todo app project.
 
@@ -113,9 +114,9 @@ ${content}
 
 Provide practical, working code that implements the requested feature.`;
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+  const result = await model.generateContent({ contents: [{ role: 'user', parts: [{ text: prompt }] }] });
+  const response = result.response;
+  const text = response.candidates[0].content.parts[0].text;
 
   // Try to extract JSON from the response
   const jsonMatch = text.match(/\{[\s\S]*\}/);

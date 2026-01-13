@@ -7,6 +7,7 @@ Once you've pushed this repository to GitHub, try creating these sample issues t
 **Title**: Add dark mode toggle
 
 **Description**:
+
 ```markdown
 I would like to have a dark mode option for the todo app. The current light theme is great, but having a dark mode would be easier on the eyes during nighttime use.
 
@@ -18,6 +19,7 @@ The dark mode should:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli please implement this feature with a toggle button in the header
 ```
@@ -29,6 +31,7 @@ The dark mode should:
 **Title**: Add priority levels to tasks
 
 **Description**:
+
 ```markdown
 It would be helpful to assign priority levels (High, Medium, Low) to tasks so I can focus on what's most important.
 
@@ -40,6 +43,7 @@ Requirements:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli please add priority levels with color coding and sorting
 ```
@@ -51,6 +55,7 @@ Requirements:
 **Title**: Add due date functionality
 
 **Description**:
+
 ```markdown
 I want to add due dates to my tasks to better manage deadlines.
 
@@ -62,6 +67,7 @@ Features needed:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli implement due dates with a date picker
 ```
@@ -73,6 +79,7 @@ Features needed:
 **Title**: Layout breaks on small mobile screens
 
 **Description**:
+
 ```markdown
 When viewing the app on screens smaller than 400px, the layout breaks:
 - Input field and Add button stack awkwardly
@@ -89,6 +96,7 @@ Actual: Layout breaks and some elements are not accessible
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli please fix the mobile responsiveness issues
 ```
@@ -100,6 +108,7 @@ Actual: Layout breaks and some elements are not accessible
 **Title**: Add categories/tags to organize tasks
 
 **Description**:
+
 ```markdown
 I'd like to organize my tasks by categories like Work, Personal, Shopping, etc.
 
@@ -111,6 +120,7 @@ Requirements:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli add task categories with filtering functionality
 ```
@@ -122,6 +132,7 @@ Requirements:
 **Title**: Allow editing existing tasks
 
 **Description**:
+
 ```markdown
 Currently, I can only delete tasks. I should be able to edit the text of existing tasks.
 
@@ -133,6 +144,7 @@ Requirements:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli implement task editing functionality with inline editing
 ```
@@ -144,6 +156,7 @@ Requirements:
 **Title**: Add keyboard shortcuts for better productivity
 
 **Description**:
+
 ```markdown
 Add keyboard shortcuts to make the app more efficient:
 - `Ctrl+N` or `Cmd+N`: Focus on input field
@@ -153,6 +166,7 @@ Add keyboard shortcuts to make the app more efficient:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli add keyboard shortcuts for common actions
 ```
@@ -164,6 +178,7 @@ Add keyboard shortcuts to make the app more efficient:
 **Title**: Add statistics dashboard
 
 **Description**:
+
 ```markdown
 Show statistics about task completion:
 - Total tasks created
@@ -174,6 +189,7 @@ Show statistics about task completion:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli create a statistics dashboard with completion metrics
 ```
@@ -185,6 +201,7 @@ Show statistics about task completion:
 **Title**: Reorder tasks via drag and drop
 
 **Description**:
+
 ```markdown
 Allow users to manually reorder tasks by dragging and dropping them.
 
@@ -196,6 +213,7 @@ Requirements:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli implement drag and drop reordering for tasks
 ```
@@ -207,6 +225,7 @@ Requirements:
 **Title**: Export and import tasks
 
 **Description**:
+
 ```markdown
 Add functionality to export tasks to JSON/CSV and import them back.
 
@@ -218,6 +237,7 @@ Features:
 ```
 
 **After creating, comment**:
+
 ```markdown
 @gemini-cli add export/import functionality for tasks
 ```
@@ -229,17 +249,18 @@ Features:
 ### Expected Behavior:
 
 1. **When you create an issue**:
+
    - Gemini CLI bot comments acknowledging the issue
    - Appropriate labels are automatically added
    - Suggestion to use `@gemini-cli` for delegation
-
 2. **When you mention @gemini-cli**:
+
    - Bot acknowledges the task
    - Creates an implementation plan
    - Shows which files will be modified
    - (In demo version) Explains what full version would do
-
 3. **When you create a PR**:
+
    - Automatic review is posted
    - Suggestions for improvements
    - Code quality checks
