@@ -1,0 +1,230 @@
+name: Gemini CLI Assistant
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  # Auto-label new issues
+  auto-label:
+    name: Auto Label Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Analyze and label issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = (issue.body || '').toLowerCase();
+            const labels = [];
+
+            // Categorize by type
+            if (title.includes('bug') || body.includes('bug') || body.includes('error') || body.includes('broken')) {
+              labels.push('bug');
+            } else if (title.includes('feature') || body.includes('feature') || body.includes('add') || body.includes('implement')) {
+              labels.push('enhancement');
+            } else if (title.includes('doc') || body.includes('documentation') || body.includes('readme')) {
+              labels.push('documentation');
+            }
+
+            // Categorize by area
+            if (body.includes('ui') || body.includes('style') || body.includes('css') || body.includes('design')) {
+              labels.push('frontend');
+            } else if (body.includes('logic') || body.includes('function') || body.includes('javascript')) {
+              labels.push('backend');
+            }
+
+            // Priority
+            if (title.includes('urgent') || body.includes('urgent') || title.includes('critical')) {
+              labels.push('priority: high');
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `🤖 **Gemini CLI Assistant**: I've automatically categorized this issue with the following labels: ${labels.map(l => `\`${l}\``).join(', ')}\n\nTo delegate this task to me, mention **@gemini-cli** with your instructions!`
+              });
+            }
+
+  # Handle task delegation
+  gemini-task:
+    name: Handle Gemini Task
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
+      contains(github.event.comment.body, '@gemini-cli')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "gemini-cli[bot]"
+          git config --global user.email "gemini-cli[bot]@users.noreply.github.com"
+
+      - name: Acknowledge task
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment;
+            const isIssue = !!context.payload.issue;
+            const number = isIssue ? context.payload.issue.number : context.payload.pull_request.number;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              body: `🤖 **Gemini CLI Assistant**: Task received! I'm analyzing the request and will create an implementation plan shortly.\n\n⏳ Status: Planning...`
+            });
+
+      - name: Create implementation plan
+        uses: actions/github-script@v7
+        id: plan
+        with:
+          script: |
+            const comment = context.payload.comment;
+            const isIssue = !!context.payload.issue;
+            const number = isIssue ? context.payload.issue.number : context.payload.pull_request.number;
+            const item = isIssue ? context.payload.issue : context.payload.pull_request;
+
+            // This is a simplified plan - in real Gemini CLI, this would use AI
+            const plan = `## 📋 Implementation Plan
+
+            Based on the request, here's what I'll do:
+
+            ### Files to modify:
+            - \`index.html\` - Update UI components
+            - \`style.css\` - Add necessary styling
+            - \`app.js\` - Implement functionality
+
+            ### Steps:
+            1. ✅ Analyze requirements from issue description
+            2. ⏳ Implement requested changes
+            3. ⏳ Test functionality
+            4. ⏳ Create pull request with changes
+            5. ⏳ Provide summary
+
+            I'll start working on this now!`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              body: plan
+            });
+
+            return { number, isIssue };
+
+      - name: Placeholder for AI implementation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { number, isIssue } = ${{ steps.plan.outputs.result }};
+
+            const summary = `## ✅ Task Completed!
+
+            I've analyzed the request. In a full Gemini CLI integration, I would:
+
+            1. ✅ Understand the requirements from the issue/PR
+            2. ✅ Generate code changes based on context
+            3. ✅ Create commits with the implementation
+            4. ✅ Open a pull request with the changes
+            5. ✅ Provide a summary of what was done
+
+            ### 🔧 How to enable full AI capabilities:
+
+            To get the complete Gemini CLI experience shown in the demo, you would need to:
+
+            1. Install the actual **Gemini CLI** tool
+            2. Configure it with your preferences
+            3. The AI would then autonomously:
+               - Read and understand your codebase
+               - Implement features based on natural language requests
+               - Create PRs with working code
+               - Review its own code and suggest improvements
+
+            ### 📚 Resources:
+            - [Gemini CLI GitHub](https://github.com/google/generative-ai-docs/tree/main/gemini-cli)
+            - [Gemini CLI Documentation](https://ai.google.dev/gemini-api/docs/cli)
+
+            This workflow demonstrates the **structure** of how Gemini CLI GitHub Actions work. The actual AI-powered implementation requires the full Gemini CLI integration.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              body: summary
+            });
+
+  # Auto-review PRs
+  auto-review:
+    name: Auto Review PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Review PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Simulate basic code review
+            const review = `## 🤖 Gemini CLI Auto-Review
+
+            I've analyzed this pull request. Here are my observations:
+
+            ### ✅ Good practices detected:
+            - Code structure follows existing patterns
+            - Changes are focused and scoped
+
+            ### 💡 Suggestions for improvement:
+            - Consider adding comments for complex logic
+            - Ensure all edge cases are handled
+            - Test the changes across different browsers (if applicable)
+
+            ### 📝 Checklist:
+            - [ ] Code follows project conventions
+            - [ ] All functions have clear purposes
+            - [ ] No hard-coded values that should be constants
+            - [ ] User experience is intuitive
+
+            **Note**: This is an automated review template. In a full Gemini CLI integration, the AI would provide specific, contextual feedback based on actual code analysis.
+
+            You can ask me to address specific feedback by mentioning **@gemini-cli** with your instructions!`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: review
+            });
