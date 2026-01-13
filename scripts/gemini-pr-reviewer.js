@@ -75,7 +75,7 @@ async function getChangedFiles() {
  * Review PR using Gemini
  */
 async function reviewPR(prDetails, diff, files) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
   const filesInfo = files.map(f => `
 **${f.filename}** (${f.status})
