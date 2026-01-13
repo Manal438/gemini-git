@@ -72,7 +72,7 @@ async function getProjectContext() {
  * Analyze the request using Gemini
  */
 async function analyzeRequest(issueDetails, userRequest, projectContext) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   const prompt = `You are an AI assistant helping with a GitHub issue in a Todo app project.
 
