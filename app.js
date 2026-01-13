@@ -25,7 +25,7 @@ todoInput.addEventListener('keypress', (e) => {
         addTodo();
     }
 });
-
+//clearCompletedBtn.addEventListener('click', () => {
 // Clear completed todos
 clearCompletedBtn.addEventListener('click', clearCompleted);
 
