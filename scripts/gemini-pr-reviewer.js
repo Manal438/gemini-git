@@ -6,19 +6,18 @@
  * This script reviews pull requests using the Gemini API
  */
 
-const { VertexAI } = require('@google-cloud/vertexai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { Octokit } = require('@octokit/rest');
 const { execSync } = require('child_process');
 
 // Configuration
-const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID || process.env.GEMINI_API_KEY;
-const LOCATION = process.env.GOOGLE_CLOUD_LOCATION || 'us-central1';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
 const PR_NUMBER = process.env.PR_NUMBER;
 
 // Initialize clients
-const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
@@ -76,7 +75,7 @@ async function getChangedFiles() {
  * Review PR using Gemini
  */
 async function reviewPR(prDetails, diff, files) {
-  const model = vertexAI.getGenerativeModel({ model: 'gemini-2.0-flash-001' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   const filesInfo = files.map(f => `
 **${f.filename}** (${f.status})
@@ -137,9 +136,9 @@ Review this pull request and provide:
 
 Be specific and constructive. Focus on actual code changes, not generic advice.`;
 
-  const result = await model.generateContent({ contents: [{ role: 'user', parts: [{ text: prompt }] }] });
-  const response = result.response;
-  const text = response.candidates[0].content.parts[0].text;
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
 
   // Try to extract JSON from the response
   const jsonMatch = text.match(/\{[\s\S]*\}/);
