@@ -37,7 +37,7 @@ async function testConnection() {
   try {
     console.log('🔌 Connecting to Gemini API...');
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
 
     console.log('📤 Sending test request...');
     const result = await model.generateContent('Say hello in 5 words or less');
