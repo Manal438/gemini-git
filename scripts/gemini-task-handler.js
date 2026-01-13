@@ -140,10 +140,23 @@ async function createBranchAndCommit(branchName, changes, commitMessage) {
     // Create and checkout new branch
     execSync(`git checkout -b ${branchName}`);
 
-    // Write changes to files
+    // Write changes to files and add them to git
     for (const [filename, change] of Object.entries(changes)) {
       await fs.writeFile(path.join(process.cwd(), filename), change.new_content);
-      execSync(`git add ${filename}`);
+
+      // Try to add the file, skip if it's ignored
+      try {
+        execSync(`git add ${filename}`, { stdio: 'pipe' });
+      } catch (addError) {
+        console.log(`Skipping ${filename} (may be in .gitignore)`);
+      }
+    }
+
+    // Check if there are any changes to commit
+    const status = execSync('git status --porcelain', { encoding: 'utf-8' });
+    if (!status.trim()) {
+      console.log('No changes to commit (all files may be ignored)');
+      return null;
     }
 
     // Commit changes
@@ -226,7 +239,13 @@ ${analysis.implementation_plan.map((step, i) => `${i + 1}. ${step}`).join('\n')}
     const commitMessage = `${analysis.summary}\n\nCo-Authored-By: gemini-cli[bot] <gemini-cli[bot]@users.noreply.github.com>`;
 
     console.log('Creating branch and committing changes...');
-    await createBranchAndCommit(branchName, analysis.changes, commitMessage);
+    const createdBranch = await createBranchAndCommit(branchName, analysis.changes, commitMessage);
+
+    // Check if branch was created (may be null if all files were ignored)
+    if (!createdBranch) {
+      await postComment('⚠️ Unable to create changes - all generated files are in .gitignore. Please check the repository settings.');
+      return;
+    }
 
     // Create pull request
     const prBody = `## 🤖 Automated Implementation
