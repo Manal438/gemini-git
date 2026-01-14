@@ -43,10 +43,12 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow inputs to wrap on smaller screens */
 }
 
 #todoInput {
-    flex: 1;
+    flex: 1; /* Allow todo input to take available space */
+    min-width: 150px; /* Ensure it doesn't get too small */
     padding: 15px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -54,7 +56,18 @@ h1 {
     transition: border-color 0.3s;
 }
 
-#todoInput:focus {
+#dueDateInput {
+    flex-grow: 0; /* Don't force growth, let it take its natural size */
+    min-width: 150px; /* Ensure it doesn't get too small */
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+#todoInput:focus,
+#dueDateInput:focus {
     outline: none;
     border-color: #667eea;
 }
@@ -80,6 +93,7 @@ h1 {
     gap: 10px;
     margin-bottom: 20px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .filter-btn {
@@ -90,6 +104,7 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s;
+    flex-shrink: 0; /* Prevent buttons from shrinking too much */
 }
 
 .filter-btn.active {
@@ -110,11 +125,13 @@ h1 {
 .todo-item {
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Space out content and delete button */
     padding: 15px;
     background: #f8f9fa;
     margin-bottom: 10px;
     border-radius: 8px;
     transition: all 0.3s;
+    flex-wrap: wrap; /* Allow content to wrap on smaller screens */
 }
 
 .todo-item:hover {
@@ -136,12 +153,27 @@ h1 {
     height: 20px;
     margin-right: 15px;
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+.todo-content {
+    flex: 1; /* Allows text and date to take up available space */
+    display: flex;
+    flex-direction: column;
+    margin-right: 15px; /* Space between content and delete button */
+    min-width: 0; /* Allows flex item to shrink below its content size */
 }
 
 .todo-text {
-    flex: 1;
     font-size: 16px;
     color: #333;
+    word-break: break-word; /* Prevents long words from overflowing */
+}
+
+.todo-item .due-date {
+    font-size: 0.85em;
+    color: #888;
+    margin-top: 5px;
 }
 
 .btn-delete {
@@ -153,6 +185,7 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: background 0.3s;
+    flex-shrink: 0;
 }
 
 .btn-delete:hover {
@@ -186,4 +219,15 @@ h1 {
 
 .hidden {
     display: none !important;
+}
+
+/* New style for overdue tasks */
+.todo-item.overdue {
+    background-color: #ffebee; /* Light red background */
+    border-left: 5px solid #ff4757; /* Red left border */
+}
+
+.todo-item.overdue .due-date {
+    color: #ff4757;
+    font-weight: bold;
 }
