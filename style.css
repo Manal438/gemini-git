@@ -43,10 +43,12 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
 #todoInput {
-    flex: 1;
+    flex: 2; /* Give more space to the todo text */
+    min-width: 150px;
     padding: 15px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -55,6 +57,22 @@ h1 {
 }
 
 #todoInput:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#dueDateInput {
+    flex: 1; /* Give less space to the date */
+    min-width: 120px;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    color: #333;
+}
+
+#dueDateInput:focus {
     outline: none;
     border-color: #667eea;
 }
@@ -75,11 +93,19 @@ h1 {
     background: #5568d3;
 }
 
+.controls-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
 .filter-section {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .filter-btn {
@@ -90,6 +116,7 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s;
+    color: #333;
 }
 
 .filter-btn.active {
@@ -100,6 +127,32 @@ h1 {
 
 .filter-btn:hover {
     border-color: #667eea;
+}
+
+.sort-section {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sort-btn {
+    padding: 8px 20px;
+    background: transparent;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    color: #333;
+}
+
+.sort-btn.active {
+    background: #764ba2;
+    color: white;
+    border-color: #764ba2;
+}
+
+.sort-btn:hover {
+    border-color: #764ba2;
 }
 
 .todo-list {
@@ -131,17 +184,47 @@ h1 {
     color: #999;
 }
 
+.todo-item.overdue {
+    background-color: #ffe0e0; /* Light red background */
+    border-left: 5px solid #ff4757; /* Red border on the left */
+}
+
+.todo-item.overdue .todo-text {
+    color: #d63031; /* Darker red text */
+}
+
 .todo-checkbox {
     width: 20px;
     height: 20px;
     margin-right: 15px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .todo-text {
     flex: 1;
     font-size: 16px;
     color: #333;
+    margin-right: 10px;
+    word-break: break-word; /* Ensure long text wraps */
+}
+
+.due-date {
+    font-size: 0.85em;
+    color: #666;
+    margin-left: auto; /* Push to the right */
+    margin-right: 15px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.todo-item.completed .due-date {
+    color: #999;
+}
+
+.todo-item.overdue .due-date {
+    color: #d63031;
+    font-weight: 600;
 }
 
 .btn-delete {
@@ -153,6 +236,7 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: background 0.3s;
+    flex-shrink: 0;
 }
 
 .btn-delete:hover {
@@ -186,4 +270,46 @@ h1 {
 
 .hidden {
     display: none !important;
+}
+
+@media (max-width: 480px) {
+    .input-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #todoInput, #dueDateInput, .btn-add {
+        flex: none;
+        width: 100%;
+    }
+
+    .controls-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-section, .sort-section {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .todo-item {
+        flex-wrap: wrap;
+    }
+
+    .todo-text {
+        flex: auto;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .due-date {
+        margin-left: 0;
+        margin-right: 10px;
+        order: 3; /* Position after text on wrap */
+    }
+
+    .btn-delete {
+        order: 4;
+    }
 }

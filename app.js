@@ -1,14 +1,17 @@
 // Todo App Logic
 let todos = [];
 let currentFilter = 'all';
+let currentSort = 'none'; // 'none', 'dueDateAsc'
 
 // DOM Elements
 const todoInput = document.getElementById('todoInput');
+const dueDateInput = document.getElementById('dueDateInput');
 const addBtn = document.getElementById('addBtn');
 const todoList = document.getElementById('todoList');
 const taskCount = document.getElementById('taskCount');
 const clearCompletedBtn = document.getElementById('clearCompleted');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const sortByDueDateBtn = document.getElementById('sortByDueDateBtn');
 
 // Load todos from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,7 +28,7 @@ todoInput.addEventListener('keypress', (e) => {
         addTodo();
     }
 });
-//clearCompletedBtn.addEventListener('click', () => {
+
 // Clear completed todos
 clearCompletedBtn.addEventListener('click', clearCompleted);
 
@@ -39,8 +42,12 @@ filterBtns.forEach(btn => {
     });
 });
 
+// Sort by Due Date button
+sortByDueDateBtn.addEventListener('click', toggleSortByDueDate);
+
 function addTodo() {
     const text = todoInput.value.trim();
+    const dueDate = dueDateInput.value; // Get the date value (YYYY-MM-DD string)
 
     if (text === '') {
         alert('Please enter a task!');
@@ -51,11 +58,13 @@ function addTodo() {
         id: Date.now(),
         text: text,
         completed: false,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        dueDate: dueDate // Store due date as a string
     };
 
     todos.push(todo);
     todoInput.value = '';
+    dueDateInput.value = ''; // Clear date input
     saveTodos();
     renderTodos();
 }
@@ -94,21 +103,69 @@ function getFilteredTodos() {
     }
 }
 
+function toggleSortByDueDate() {
+    if (currentSort === 'dueDateAsc') {
+        currentSort = 'none';
+        sortByDueDateBtn.classList.remove('active');
+    } else {
+        currentSort = 'dueDateAsc';
+        sortByDueDateBtn.classList.add('active');
+    }
+    renderTodos();
+}
+
 function renderTodos() {
-    const filteredTodos = getFilteredTodos();
+    let displayedTodos = getFilteredTodos();
+
+    // Apply sorting if active
+    if (currentSort === 'dueDateAsc') {
+        displayedTodos.sort((a, b) => {
+            // Prioritize tasks with due dates, then sort by date
+            if (!a.dueDate && !b.dueDate) return 0; // Both no due date, maintain original order
+            if (!a.dueDate) return 1; // a has no due date, b goes first
+            if (!b.dueDate) return -1; // b has no due date, a goes first
+
+            // Convert to Date objects for comparison
+            const dateA = new Date(a.dueDate);
+            const dateB = new Date(b.dueDate);
+
+            // Sort by date ascending
+            return dateA.getTime() - dateB.getTime();
+        });
+    }
 
     todoList.innerHTML = '';
 
-    if (filteredTodos.length === 0) {
+    if (displayedTodos.length === 0) {
         todoList.innerHTML = '<li style="text-align: center; padding: 20px; color: #999;">No tasks to show</li>';
     } else {
-        filteredTodos.forEach(todo => {
+        displayedTodos.forEach(todo => {
             const li = document.createElement('li');
-            li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+            let classes = `todo-item ${todo.completed ? 'completed' : ''}`;
+
+            // Check for overdue tasks (only if not completed)
+            if (todo.dueDate && !todo.completed) {
+                const today = new Date();
+                // Normalize today's date to start of day for accurate comparison
+                today.setHours(0, 0, 0, 0);
+
+                const taskDueDate = new Date(todo.dueDate);
+                // Normalize task due date to start of day
+                taskDueDate.setHours(0, 0, 0, 0);
+
+                if (taskDueDate < today) {
+                    classes += ' overdue';
+                }
+            }
+            li.className = classes;
+
+            const dueDateDisplay = todo.dueDate ? 
+                `<span class="due-date">Due: ${new Date(todo.dueDate).toLocaleDateString()}</span>` : '';
 
             li.innerHTML = `
                 <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
                 <span class="todo-text">${todo.text}</span>
+                ${dueDateDisplay}
                 <button class="btn-delete">Delete</button>
             `;
 
@@ -142,4 +199,6 @@ function loadTodos() {
     if (savedTodos) {
         todos = JSON.parse(savedTodos);
     }
+    // Ensure dueDate is handled, even if it wasn't present in older todos
+    // (No explicit conversion needed here as it's stored as string)
 }

@@ -20,13 +20,23 @@
                 placeholder="What needs to be done?"
                 autofocus
             >
+            <input
+                type="date"
+                id="dueDateInput"
+                title="Set due date"
+            >
             <button id="addBtn" class="btn-add">Add Task</button>
         </div>
 
-        <div class="filter-section">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="active">Active</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
+        <div class="controls-section">
+            <div class="filter-section">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            <div class="sort-section">
+                <button id="sortByDueDateBtn" class="sort-btn">Sort by Due Date</button>
+            </div>
         </div>
 
         <ul id="todoList" class="todo-list"></ul>
