@@ -1,0 +1,29 @@
+{
+  "name": "gemini-git",
+  "version": "1.0.0",
+  "description": "Todo app with Gemini CLI GitHub Actions integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "echo \"No tests yet\" && exit 0",
+    "test-api": "node scripts/test-local.js",
+    "setup": "npm install && cp .env.example .env && echo '✅ Setup complete! Edit .env with your API key'"
+  },
+  "keywords": [
+    "gemini",
+    "github-actions",
+    "todo-app",
+    "ai-agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@octokit/rest": "^20.0.2",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
