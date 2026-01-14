@@ -9,6 +9,7 @@ const todoList = document.getElementById('todoList');
 const taskCount = document.getElementById('taskCount');
 const clearCompletedBtn = document.getElementById('clearCompleted');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const todoError = document.getElementById('todoError'); // New: Get error message element
 
 // Load todos from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -25,7 +26,17 @@ todoInput.addEventListener('keypress', (e) => {
         addTodo();
     }
 });
-//clearCompletedBtn.addEventListener('click', () => {
+
+// Clear error message when user starts typing or focuses on input
+todoInput.addEventListener('input', () => {
+    if (!todoError.classList.contains('hidden')) {
+        todoError.classList.add('hidden');
+    }
+    if (todoInput.classList.contains('error')) {
+        todoInput.classList.remove('error');
+    }
+});
+
 // Clear completed todos
 clearCompletedBtn.addEventListener('click', clearCompleted);
 
@@ -42,8 +53,15 @@ filterBtns.forEach(btn => {
 function addTodo() {
     const text = todoInput.value.trim();
 
+    // Hide any existing error message and remove error class from input
+    todoError.classList.add('hidden');
+    todoInput.classList.remove('error');
+
     if (text === '') {
-        alert('Please enter a task!');
+        todoError.textContent = 'Please enter a task!';
+        todoError.classList.remove('hidden');
+        todoInput.classList.add('error'); // Add error class for styling
+        todoInput.focus(); // Keep focus on the input field
         return;
     }
 

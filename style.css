@@ -59,6 +59,26 @@ h1 {
     border-color: #667eea;
 }
 
+/* New styles for error message and input error state */
+.error-message {
+    color: #ff4757; /* Red */
+    font-size: 0.9em;
+    margin-top: -15px; /* Adjust spacing to move it closer to the input */
+    margin-bottom: 20px; /* Space before filter section */
+    padding-left: 5px; /* Align with input */
+}
+
+#todoInput.error {
+    border-color: #ff4757;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
 .btn-add {
     padding: 15px 30px;
     background: #667eea;
